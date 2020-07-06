@@ -321,6 +321,8 @@ class Social_Rocket_Admin {
 			
 			</div>
 			
+			<?php wp_nonce_field( 'social_rocket_settings' ); ?>
+			
 		</form>
 		
 		</div>
@@ -3716,6 +3718,13 @@ class Social_Rocket_Admin {
 		
 		global $wpdb;
 		
+		if (
+			! isset( $_POST['_wpnonce'] ) ||
+			! wp_verify_nonce( $_POST['_wpnonce'], 'social_rocket_settings' )
+		) {
+			return;
+		}
+		
 		$SR = Social_Rocket::get_instance();
 		$post_types = $SR->get_post_types();
 		$archives = $SR->get_archive_types();
@@ -4621,7 +4630,7 @@ class Social_Rocket_Admin {
 		);
 		foreach ( $sensitive_infos as $sensitive_info ) {
 			if ( isset( $settings[$sensitive_info] ) ) {
-				$settings[$sensitive_info] = empty( $settings[$sensitive_info] ) ? '<not set>' : '<set>';
+				$settings[$sensitive_info] = empty( $settings[$sensitive_info] ) ? '(not set)' : '(set)';
 			}
 		}
 
@@ -4633,6 +4642,15 @@ class Social_Rocket_Admin {
 				$value = json_encode( $value );
 			}
 			$return .= '    ' . $key . ':' . str_repeat( ' ', 34 - strlen( $key ) ) . $value . "\n";
+		}
+		$invalid_facebook_token = get_option( 'sr_admin_notice_sr_invalid_facebook_token' );
+		$return .= 'Facebook token error message: ';
+		if ( $invalid_facebook_token > '' ) {
+			$return .= $invalid_facebook_token . "\n";
+		} elseif ( $invalid_facebook_token === '' ) {
+			$return .= "(permanently dismissed)\n";
+		} else {
+			$return .= "(no error)\n";
 		}
 		$return .= "\n";
 
@@ -5532,7 +5550,7 @@ class Social_Rocket_Admin {
 		
 		if ( class_exists( 'Social_Rocket_Admin_Notices' ) ) {
 			
-			if (
+			if ( 
 				get_option( '_social_rocket_facebook_invalid_token' ) > '' &&
 				! isset( $_POST['social_rocket_save'] ) // make sure we didn't just save
 			) {
@@ -5540,9 +5558,19 @@ class Social_Rocket_Admin {
 					$notice_args = array(
 						'class' => 'notice-error',
 						'content' => sprintf( 
-							'<p>' . __( 'Social Rocket received the following error from the Facebook API: "%s".  Please make sure your Facebook Access Token is correct on the <a href="%s">settings page</a>.', 'social-rocket' ) . '</p>',
+							'<p>' . __( 'Social Rocket received the following error from the Facebook API: "%s".  Please make sure your Facebook Access Token is correct on the <a href="%s">settings page</a>.', 'social-rocket' ) . '</p>' .
+							'<p><a href="https://wpsocialrocket.com/support/" target="_blank">' . __( 'I don\'t know what this means', 'social-rocket' ) . '</a></p>' .
+							'<p><a href="%s">' . __( 'I fixed it already, leave me alone!', 'social-rocket' ) . '</a></p>',
 							get_option( '_social_rocket_facebook_invalid_token' ),
-							admin_url( 'admin.php?page=social_rocket_settings#social-extras' )
+							admin_url( 'admin.php?page=social_rocket_settings#social-extras' ),
+							add_query_arg(
+								array(
+									'social-rocket-hide-notice'   => 'sr_invalid_facebook_token',
+									'social-rocket-dismiss'       => 1,
+									'_social_rocket_notice_nonce' => wp_create_nonce( 'social_rocket_hide_notices_nonce' ),
+								),
+								admin_url( 'admin.php?page=social_rocket_settings' )
+							)
 						),
 						'dismissable' => true,
 						'dismiss_transient' => 60 * 60 * 24 * 7 * 30, // 30 days
@@ -5550,7 +5578,9 @@ class Social_Rocket_Admin {
 					Social_Rocket_Admin_Notices::add_custom_notice( 'sr_invalid_facebook_token', $notice_args );
 				}
 			} else {
-				Social_Rocket_Admin_Notices::remove_notice( 'sr_invalid_facebook_token' );
+				if ( get_option( 'sr_admin_notice_sr_invalid_facebook_token' ) !== '' ) {
+					Social_Rocket_Admin_Notices::remove_notice( 'sr_invalid_facebook_token' );
+				}
 			}
 		
 		}

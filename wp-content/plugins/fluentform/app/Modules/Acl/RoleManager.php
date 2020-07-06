@@ -12,7 +12,7 @@ class RoleManager
             ), 200);
         }
 
-        $roles = get_editable_roles();
+        $roles = \get_editable_roles();
         $formatted = array();
         foreach ($roles as $key => $role) {
             if($key == 'administrator') {

@@ -117,6 +117,10 @@ class Social_Rocket_Facebook {
 		$SR = Social_Rocket::get_instance();
 		$access_token = $SR->_isset( $SR->settings['facebook']['access_token'], '' );
 		
+		if ( ! ( $access_token > '' ) ) {
+			return 0; // don't even attempt it if no access token provided, it won't work.
+		}
+		
 		$api_url = str_replace( '%url%', urlencode( $url ), $this->api_url );
 		$api_url = str_replace( '%access_token%', $access_token, $api_url );
 		
@@ -135,6 +139,9 @@ class Social_Rocket_Facebook {
 				update_option( '_social_rocket_facebook_invalid_token', $response_data['error']['message'] );
 			}
 			return false;
+		} else {
+			// clear any previous error, if present
+			delete_option( '_social_rocket_facebook_invalid_token' );
 		}
 		
 		$count = 0;

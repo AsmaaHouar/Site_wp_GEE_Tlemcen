@@ -203,9 +203,14 @@ function fluentform_mb_strpos($haystack, $needle) {
     return strpos($haystack, $needle);
 }
 
-function fluentformHandleScheduledTasks()
+function fluentFormHandleScheduledTasks()
 {
     // Let's run the feed actions
     $handler = new \FluentForm\App\Services\WPAsync\FluentFormAsyncRequest(wpFluentForm());
     $handler->processActions();
+}
+
+function fluentFormHandleScheduledEmailReport()
+{
+     \WPNS\App\Hooks\Handlers\Scheduler::processEmailReport();
 }

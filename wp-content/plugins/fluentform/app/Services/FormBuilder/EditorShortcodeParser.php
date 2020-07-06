@@ -58,7 +58,6 @@ class EditorShortcodeParser
         }
 
 
-
         if (is_null(static::$dynamicShortcodes)) {
             static::$dynamicShortcodes = fluentFormEditorShortCodes();
         }
@@ -67,13 +66,12 @@ class EditorShortcodeParser
 
         foreach (static::parseValue($value) as $handler) {
             if (isset(static::$handlers[$handler])) {
-
-                $filteredValue .= call_user_func_array(
+                return call_user_func_array(
                     [__CLASS__, static::$handlers[$handler]],
                     ['{' . $handler . '}', $form]
                 );
             } elseif (strpos($handler, 'get.') !== false) {
-                $filteredValue .= static::parseQueryParam($handler);
+                return static::parseQueryParam($handler);
             } else if (strpos($handler, 'user.meta.') !== false) {
                 $key = substr(str_replace(['{', '}'], '', $value), 10);
                 $user = wp_get_current_user();
@@ -127,7 +125,7 @@ class EditorShortcodeParser
                 // This can be the css
                 $handlerValue = apply_filters('fluentform_editor_shortcode_callback_' . $handler, '{' . $handler . '}', $form);
                 // In not found then return the original please
-                $filteredValue .= $handlerValue;
+                $filteredValue = $handlerValue;
             }
         }
 
@@ -139,7 +137,7 @@ class EditorShortcodeParser
      * @param  string $value
      * @return mixed
      */
-    private static function parseValue($value)
+    public static function parseValue($value)
     {
         if (!is_array($value)) {
             return preg_split(
@@ -254,7 +252,7 @@ class EditorShortcodeParser
     private static function parseDate($value, $form = null)
     {
         $format = substr(str_replace(['}', '{'], '', $value), 5);
-        $date = date($format);
+        $date = wp_date($format);
         return $date ? $date : '';
     }
 
@@ -269,7 +267,10 @@ class EditorShortcodeParser
     {
         $exploded = explode('.', $value);
         $param = array_pop($exploded);
-
-        return isset($_REQUEST[$param]) ? wp_kses_post($_REQUEST[$param]) : '';
+        $value = $_REQUEST[$param];
+        if(is_array($value)) {
+            return '';
+        }
+        return isset($_REQUEST[$param]) ? wp_kses_post($value) : '';
     }
 }

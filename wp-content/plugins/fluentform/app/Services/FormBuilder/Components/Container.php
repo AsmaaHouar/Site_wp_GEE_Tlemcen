@@ -51,8 +51,8 @@ class Container extends BaseComponent
             $newColumnClass = $columnClass.' ff-t-column-'.($columnIndex + 1);
 			echo "<div class='{$newColumnClass}'>";
 			foreach ($column['fields'] as $item) {
-				$item = $this->app->applyFilters('fluentform_before_render_item', $item, $form);
-				$this->app->doAction('fluentform_render_item_'.$item['element'], $item, $form);
+				$item = apply_filters('fluentform_before_render_item', $item, $form);
+				do_action('fluentform_render_item_'.$item['element'], $item, $form);
 			}
 			echo "</div>";
 		}

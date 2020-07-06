@@ -362,4 +362,18 @@ class Form
         });
     }
 
+    /**
+     * Get Any Field Type
+     * @return array
+     */
+
+    public function getInputsByElementTypes($types, $with = ['element'])
+    {
+        $fields = $this->getInputs($with);
+
+        return array_filter($fields, function ($field) use ($types) {
+            return in_array($field['element'], $types);
+        });
+    }
+
 }

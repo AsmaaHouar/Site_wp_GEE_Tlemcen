@@ -10,21 +10,30 @@ use FluentForm\Framework\Helpers\ArrayHelper as Arr;
 class Export
 {
     /**
+     * @var \FluentForm\Framework\Foundation\Application
+     */
+    protected $app;
+
+    /**
      * @var \FluentForm\Framework\Request\Request
      */
     protected $request;
 
-    protected $app;
+    /**
+     * @var String table/data source name
+     */
+    protected $tableName;
 
     /**
      * Export constructor.
      *
      * @param \FluentForm\Framework\Foundation\Application $application
      */
-    public function __construct(Application $application)
+    public function __construct(Application $application, $tableName = 'fluentform_submissions')
     {
-        $this->request = $application->request;
         $this->app = $application;
+        $this->request = $application->request;
+        $this->tableName = $tableName;
     }
 
     /**
@@ -34,7 +43,6 @@ class Export
      */
     public function index()
     {
-
         $formId = intval($this->request->get('form_id'));
 
         $form = wpFluent()->table('fluentform_forms')->find($formId);
@@ -69,23 +77,30 @@ class Export
             $submission->response = json_decode($submission->response, true);
             $temp = [];
             foreach ($inputLabels as $field => $label) {
-                $temp[] = trim(wp_strip_all_tags(FormDataParser::formatValue(Arr::get($submission->user_inputs, $field))));
+                $temp[] = trim(
+                    wp_strip_all_tags(
+                        FormDataParser::formatValue(
+                            Arr::get($submission->user_inputs, $field)
+                        )
+                    )
+                );
             }
-            if($form->has_payment) {
+
+            if ($form->has_payment && $this->tableName == 'fluentform_submissions') {
                 $temp[] = round($submission->payment_total / 100, 1);
                 $temp[] = $submission->payment_status;
                 $temp[] = $submission->currency;
             }
 
-            $temp[] = $submission->id;
-            $temp[] = $submission->status;
-            $temp[] = $submission->created_at;
+            $temp[] = @$submission->id;
+            $temp[] = @$submission->status;
+            $temp[] = @$submission->created_at;
 
             $exportData[] = $temp;
         }
 
         $extraLabels = [];
-        if($form->has_payment) {
+        if ($form->has_payment && $this->tableName == 'fluentform_submissions') {
             $extraLabels[] = 'payment_total';
             $extraLabels[] = 'payment_status';
             $extraLabels[] = 'currency';
@@ -94,7 +109,6 @@ class Export
         $extraLabels[] = 'entry_id';
         $extraLabels[] = 'entry_status';
         $extraLabels[] = 'created_at';
-
 
         $inputLabels = array_merge($inputLabels, $extraLabels);
 
@@ -150,40 +164,55 @@ class Export
 
     private function getSubmissions($formId)
     {
-        $query = wpFluent()->table('fluentform_submissions')
+        $query = wpFluent()->table($this->tableName)
             ->where('form_id', $formId)
             ->orderBy('id', $this->request->get('sort_by', 'DESC'));
 
-        $status = $this->request->get('entry_type');
-        $isFavourite = $this->request->get('is_favourite');
+        if ($this->tableName == 'fluentform_submissions') {
+            $dateRange = $this->request->get('date_range');
+            if ($dateRange) {
+                $query->where('created_at', '>=', $dateRange[0] . ' 00:00:01');
+                $query->where('created_at', '<=', $dateRange[1] . ' 23:59:59');
+            }
 
-        $dateRange = $this->request->get('date_range');
-        if ($dateRange) {
-            $query->where('created_at', '>=', $dateRange[0] .' 00:00:01');
-            $query->where('created_at', '<=', $dateRange[1] .' 23:59:59');
-        }
+            $isFavourite = $this->request->get('is_favourite');
 
-        if ($isFavourite == 'yes') {
-            $query->where('is_favourite', '1');
-        }
+            if ($isFavourite == 'yes') {
+                $query->where('is_favourite', '1');
+            }
 
-        if ($status == 'trashed') {
-            $query->where('status', 'trashed');
-        } else if($status && $status != 'all') {
-            $query->where('status', $status);
-        } else {
-            $query->where('status', '!=', 'trashed');
+            $status = $this->request->get('entry_type');
+
+            if ($status == 'trashed') {
+                $query->where('status', 'trashed');
+            } else if ($status && $status != 'all') {
+                $query->where('status', $status);
+            } else {
+                $query->where('status', '!=', 'trashed');
+            }
+
+            if ($paymentStatuses = $this->request->get('payment_statuses')) {
+                if (is_array($paymentStatuses)) {
+                    $query->whereIn('payment_status', $paymentStatuses);
+                }
+            }
+
         }
 
         $searchString = $this->request->get('search');
+
         if ($searchString) {
             $query->where(function ($q) use ($searchString) {
                 $q->where('id', 'LIKE', "%{$searchString}%")
-                    ->orWhere('response', 'LIKE', "%{$searchString}%")
-                    ->orWhere('status', 'LIKE', "%{$searchString}%")
-                    ->orWhere('created_at', 'LIKE', "%{$searchString}%");
+                    ->orWhere('response', 'LIKE', "%{$searchString}%");
+
+                if ($this->tableName == 'fluentform_submissions') {
+                    $q->orWhere('status', 'LIKE', "%{$searchString}%")
+                        ->orWhere('created_at', 'LIKE', "%{$searchString}%");
+                }
             });
         }
+
         return $query->get();
     }
 }

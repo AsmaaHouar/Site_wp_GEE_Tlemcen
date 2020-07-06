@@ -13,8 +13,8 @@
 
 
 $element_settings_placement = array(
-    'input_name'          => array(
-        'general'  => array(
+    'input_name' => array(
+        'general' => array(
             'admin_field_label',
             'name_fields',
             'label_placement',
@@ -25,8 +25,8 @@ $element_settings_placement = array(
             'conditional_logics',
         ),
     ),
-    'input_email'         => array(
-        'general'  => array(
+    'input_email' => array(
+        'general' => array(
             'label',
             'label_placement',
             'admin_field_label',
@@ -44,8 +44,8 @@ $element_settings_placement = array(
             'conditional_logics',
         ),
     ),
-    'input_text'          => array(
-        'general'        => array(
+    'input_text' => array(
+        'general' => array(
             'label',
             'label_placement',
             'admin_field_label',
@@ -54,7 +54,7 @@ $element_settings_placement = array(
             'data-mask',
             'validation_rules',
         ),
-        'advanced'       => array(
+        'advanced' => array(
             'value',
             'container_class',
             'class',
@@ -63,11 +63,11 @@ $element_settings_placement = array(
             'maxlength',
             'conditional_logics',
         ),
-        'generalExtras'  => array(),
+        'generalExtras' => array(),
         'advancedExtras' => array(),
     ),
-    'textarea'            => array(
-        'general'  => array(
+    'textarea' => array(
+        'general' => array(
             'label',
             'label_placement',
             'admin_field_label',
@@ -86,8 +86,8 @@ $element_settings_placement = array(
             'conditional_logics',
         )
     ),
-    'address'             => array(
-        'general'  => array(
+    'address' => array(
+        'general' => array(
             'label',
             'admin_field_label',
             'address_fields',
@@ -98,8 +98,8 @@ $element_settings_placement = array(
             'conditional_logics',
         ),
     ),
-    'select_country'      => array(
-        'general'  => array(
+    'select_country' => array(
+        'general' => array(
             'label',
             'label_placement',
             'admin_field_label',
@@ -115,8 +115,8 @@ $element_settings_placement = array(
             'conditional_logics',
         ),
     ),
-    'input_number'        => array(
-        'general'  => array(
+    'input_number' => array(
+        'general' => array(
             'label',
             'label_placement',
             'admin_field_label',
@@ -136,8 +136,8 @@ $element_settings_placement = array(
             'calculation_settings'
         ),
     ),
-    'select'              => array(
-        'general'  => array(
+    'select' => array(
+        'general' => array(
             'label',
             'label_placement',
             'admin_field_label',
@@ -146,6 +146,7 @@ $element_settings_placement = array(
             'validation_rules',
         ),
         'advanced' => array(
+            'dynamic_default_value',
             'container_class',
             'class',
             'help_message',
@@ -153,8 +154,8 @@ $element_settings_placement = array(
             'conditional_logics',
         ),
     ),
-    'input_radio'         => array(
-        'general'  => array(
+    'input_radio' => array(
+        'general' => array(
             'label',
             'label_placement',
             'admin_field_label',
@@ -163,6 +164,7 @@ $element_settings_placement = array(
             'validation_rules',
         ),
         'advanced' => array(
+            'dynamic_default_value',
             'container_class',
             'help_message',
             'name',
@@ -170,8 +172,8 @@ $element_settings_placement = array(
             'conditional_logics',
         ),
     ),
-    'input_checkbox'      => array(
-        'general'  => array(
+    'input_checkbox' => array(
+        'general' => array(
             'label',
             'label_placement',
             'admin_field_label',
@@ -180,6 +182,7 @@ $element_settings_placement = array(
             'validation_rules',
         ),
         'advanced' => array(
+            'dynamic_default_value',
             'container_class',
             'help_message',
             'name',
@@ -187,8 +190,8 @@ $element_settings_placement = array(
             'conditional_logics',
         ),
     ),
-    'input_url'           => array(
-        'general'  => array(
+    'input_url' => array(
+        'general' => array(
             'label',
             'label_placement',
             'admin_field_label',
@@ -204,8 +207,8 @@ $element_settings_placement = array(
             'conditional_logics',
         ),
     ),
-    'input_password'      => array(
-        'general'  => array(
+    'input_password' => array(
+        'general' => array(
             'label',
             'label_placement',
             'admin_field_label',
@@ -221,8 +224,8 @@ $element_settings_placement = array(
             'conditional_logics',
         ),
     ),
-    'input_date'          => array(
-        'general'  => array(
+    'input_date' => array(
+        'general' => array(
             'label',
             'label_placement',
             'admin_field_label',
@@ -240,8 +243,8 @@ $element_settings_placement = array(
             'conditional_logics',
         ),
     ),
-    'input_file'          => array(
-        'general'  => array(
+    'input_file' => array(
+        'general' => array(
             'label',
             'btn_text',
             'label_placement',
@@ -256,8 +259,8 @@ $element_settings_placement = array(
             'conditional_logics',
         ),
     ),
-    'input_image'         => array(
-        'general'  => array(
+    'input_image' => array(
+        'general' => array(
             'label',
             'btn_text',
             'label_placement',
@@ -272,8 +275,8 @@ $element_settings_placement = array(
             'conditional_logics',
         ),
     ),
-    'input_repeat'        => array(
-        'general'  => array(
+    'input_repeat' => array(
+        'general' => array(
             'label',
             'label_placement',
             'admin_field_label',
@@ -287,15 +290,15 @@ $element_settings_placement = array(
             'max_repeat_field'
         ),
     ),
-    'input_hidden'        => array(
+    'input_hidden' => array(
         'general' => array(
             'admin_field_label',
             'value',
             'name',
         ),
     ),
-    'section_break'       => array(
-        'general'  => array(
+    'section_break' => array(
+        'general' => array(
             'label',
             'description',
             'align',
@@ -305,7 +308,7 @@ $element_settings_placement = array(
             'conditional_logics',
         ),
     ),
-    'recaptcha'           => array(
+    'recaptcha' => array(
         'general' => array(
             'label',
             'label_placement',
@@ -313,30 +316,30 @@ $element_settings_placement = array(
             'validation_rules',
         ),
     ),
-    'custom_html'         => array(
+    'custom_html' => array(
         'general' => array(
             'html_codes',
             'conditional_logics',
             'container_class'
         ),
     ),
-    'shortcode'           => array(
-        'general'       => array(
+    'shortcode' => array(
+        'general' => array(
             'shortcode',
         ),
         'generalExtras' => array(
             'message' => array(
                 'template' => 'infoBlock',
-                'text'     => 'Hello',
+                'text' => 'Hello',
             ),
         ),
-        'advanced'      => array(
+        'advanced' => array(
             'class',
             'conditional_logics',
         ),
     ),
     'terms_and_condition' => array(
-        'general'  => array(
+        'general' => array(
             'admin_field_label',
             'validation_rules',
             'tnc_html',
@@ -349,8 +352,8 @@ $element_settings_placement = array(
             'conditional_logics',
         ),
     ),
-    'action_hook'         => array(
-        'general'  => array(
+    'action_hook' => array(
+        'general' => array(
             'hook_name',
         ),
         'advanced' => array(
@@ -358,22 +361,22 @@ $element_settings_placement = array(
             'conditional_logics',
         ),
     ),
-    'form_step'           => array(
+    'form_step' => array(
         'general' => array(
             'prev_btn',
             'next_btn',
             'class',
         ),
     ),
-    'button'              => array(
-        'general'       => array(
+    'button' => array(
+        'general' => array(
             'btn_text',
             'button_ui',
             'button_style',
             'button_size',
             'align',
         ),
-        'advanced'      => array(
+        'advanced' => array(
             'container_class',
             'class',
             'help_message',
@@ -381,29 +384,31 @@ $element_settings_placement = array(
         ),
         'generalExtras' => array(
             'btn_text' => array(
-                'template'  => 'inputText',
-                'label'     => __('Button Text', 'fluentform'),
+                'template' => 'inputText',
+                'label' => __('Button Text', 'fluentform'),
                 'help_text' => __('Form submission button text.', 'fluentform'),
             )
         )
     ),
-    'step_start'          => array(
+    'step_start' => array(
         'general' => array(
             'class',
             'progress_indicator',
             'step_titles',
             'disable_auto_focus',
-            'enable_auto_slider'
+            'enable_auto_slider',
+            'enable_step_data_persistency',
+            'enable_step_page_resume'
         ),
     ),
-    'step_end'            => array(
+    'step_end' => array(
         'general' => array(
             'class',
             'prev_btn',
         ),
     ),
-    'ratings'             => array(
-        'general'  => array(
+    'ratings' => array(
+        'general' => array(
             'label',
             'label_placement',
             'admin_field_label',
@@ -417,8 +422,8 @@ $element_settings_placement = array(
             'conditional_logics',
         ),
     ),
-    'tabular_grid'        => array(
-        'general'  => array(
+    'tabular_grid' => array(
+        'general' => array(
             'label',
             'label_placement',
             'admin_field_label',
@@ -434,31 +439,32 @@ $element_settings_placement = array(
             'conditional_logics',
         ),
     ),
-    'gdpr_agreement'      => array(
-        'general'       => array(
+    'gdpr_agreement' => array(
+        'general' => array(
             'admin_field_label',
             'tnc_html',
             'required_field_message',
             'container_class'
         ),
-        'advanced'      => array(
+        'advanced' => array(
             'class',
             'name',
             'conditional_logics',
         ),
         'generalExtras' => array(
             'tnc_html' => array(
-                'template'  => 'inputTextarea',
-                'label'     => __('Description', 'fluentform'),
+                'template' => 'inputTextarea',
+                'label' => __('Description', 'fluentform'),
                 'help_text' => __('Write HTML content for GDPR agreement checkbox', 'fluentform'),
-                'rows'      => 5,
-                'cols'      => 3,
+                'rows' => 5,
+                'cols' => 3,
             )
         ),
     ),
     'container' => array(
         'general' => array(
-            'container_class'
+            'container_class',
+            'conditional_logics'
         ),
         'advanced' => []
     )

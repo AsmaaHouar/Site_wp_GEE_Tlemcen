@@ -3,6 +3,7 @@
 namespace FluentForm\App\Modules\Form\Settings;
 
 use FluentForm\App\Modules\Acl\Acl;
+use FluentForm\App\Modules\Form\Form;
 use FluentForm\Framework\Helpers\ArrayHelper;
 use FluentForm\Framework\Foundation\Application;
 use FluentForm\App\Modules\Form\Settings\Validator\Validator;
@@ -13,6 +14,8 @@ class FormSettings
      * @var \FluentForm\Framework\Request\Request
      */
     private $request;
+
+    private $app;
 
     /**
      * @var int form ID.
@@ -32,8 +35,9 @@ class FormSettings
      */
     public function __construct(Application $application)
     {
-        $this->request = $application->request;
+        $this->app = $application;
 
+        $this->request = $application->request;
         $this->formId = intval($this->request->get('form_id'));
 
         $this->settingsQuery = wpFluent()->table('fluentform_form_meta')->where('form_id', $this->formId);
@@ -53,19 +57,51 @@ class FormSettings
         // that whether the expected result contains multiple
         // or one value. The developer will access that way.
         $query = $this->settingsQuery->where('meta_key', $metaKey);
-        
+
         $result = $query->get();
 
         foreach ($result as $item) {
             $item->value = json_decode($item->value, true);
-            if(isset($item->value['layout']) && !isset($item->value['layout']['asteriskPlacement'])) {
-                $item->value['layout']['asteriskPlacement'] = 'asterisk-left';
+            if (isset($item->value['layout']) && !isset($item->value['layout']['asteriskPlacement'])) {
+                $item->value['layout']['asteriskPlacement'] = 'asterisk-right';
             }
         }
 
-        $result = apply_filters('fluentform_settings_formSettings', $result);
-
         wp_send_json_success(['result' => $result], 200);
+    }
+
+
+    public function getGeneralSettingsAjax()
+    {
+        $formId = intval($this->request->get('form_id'));
+        $form = new Form($this->app);
+        $settings = [
+            'generalSettings' => $form->getFormsDefaultSettings($formId),
+            'advancedValidationSettings' => $form->getAdvancedValidationSettings($formId)
+        ];
+
+        wp_send_json_success($settings, 200);
+    }
+
+    public function saveGeneralSettingsAjax()
+    {
+        $formId = intval($this->request->get('form_id'));
+        $form = new Form($this->app);
+        $formSettings = \json_decode($this->request->get('formSettings'), true);
+        $advancedValidationSettings = \json_decode($this->request->get('advancedValidationSettings'), true);
+
+        Validator::validate(
+            'confirmations',
+            ArrayHelper::get($formSettings, 'confirmation', [])
+        );
+
+        $form->updateMeta($formId, 'formSettings', $formSettings);
+        $form->updateMeta($formId, 'advancedValidationSettings', $advancedValidationSettings);
+
+        wp_send_json_success([
+            'message' => __('Settings has been saved.', 'fluentform')
+        ], 200);
+
     }
 
     /**
@@ -76,14 +112,14 @@ class FormSettings
         $value = $this->request->get('value', '');
 
         $valueArray = $value ? json_decode($value, true) : [];
-        
+
         $key = sanitize_text_field($this->request->get('meta_key'));
 
         if ($key == 'formSettings') {
             Validator::validate(
                 'confirmations', ArrayHelper::get(
-                    $valueArray, 'confirmation', []
-                )
+                $valueArray, 'confirmation', []
+            )
             );
         } else {
             Validator::validate($key, $valueArray);
@@ -91,8 +127,8 @@ class FormSettings
 
         $data = [
             'meta_key' => $key,
-            'value'    => $value,
-            'form_id'  => $this->formId
+            'value' => $value,
+            'form_id' => $this->formId
         ];
 
         // If the request has an valid id field it's safe to assume
@@ -112,9 +148,9 @@ class FormSettings
         }
 
         wp_send_json_success([
-            'message'  => __('Settings has been saved.', 'fluentform'),
+            'message' => __('Settings has been saved.', 'fluentform'),
             'settings' => json_decode($value, true),
-            'id'       => $insertId
+            'id' => $insertId
         ], 200);
     }
 

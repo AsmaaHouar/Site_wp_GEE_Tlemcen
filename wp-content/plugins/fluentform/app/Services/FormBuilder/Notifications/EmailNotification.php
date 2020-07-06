@@ -68,7 +68,7 @@ class EmailNotification
                 'component' => 'EmailNotification',
                 'status' => 'error',
                 'title' => 'Email sending skipped',
-                'description' => "Email skipped to send because email may not valid.<br />Subject: {$notification['subject']}. <br/>Email: " . $notification['sendTo']['email'],
+                'description' => "Email skipped to send because email/subject may not valid.<br />Subject: {$notification['subject']}. <br/>Email: " . $notification['sendTo']['email'],
             ]);
             return false;
         }
@@ -88,6 +88,7 @@ class EmailNotification
             * Inline email logger. It will work fine hopefully
             */
             add_action('wp_mail_failed', function ($error) use ($notification, $form, $entryId) {
+
                 $failedMailSubject = ArrayHelper::get($error->error_data, 'wp_mail_failed.subject');
                 if ($failedMailSubject == $notification['subject']) {
                     $reason = $error->get_error_message();
@@ -221,8 +222,8 @@ class EmailNotification
             $headers[] = 'cc: ' . $ccEmail;
         }
 
-        if ($notification['replyTo']) {
-            $headers[] = "reply-to: <{$notification['replyTo']}>";
+        if ($notification['replyTo'] && is_email($notification['replyTo'])) {
+            $headers[] = "Reply-To: <".$notification['replyTo'].">";
         }
 
         $headers = $this->app->applyFilters(

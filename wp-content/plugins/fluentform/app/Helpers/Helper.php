@@ -92,7 +92,7 @@ class Helper
         return $globalModules && isset($globalModules['slack']) && $globalModules['slack'] == 'yes';
     }
 
-    public static function getEntryStutuses($form_id = false)
+    public static function getEntryStatuses($form_id = false)
     {
         $statuses = apply_filters('fluentform_entry_statuses', [
             'unread' => 'Unread',
@@ -136,7 +136,6 @@ class Helper
         $metaValue = $meta->value;
         // decode the JSON data
         $result = json_decode($metaValue, true);
-
 
         if (json_last_error() == JSON_ERROR_NONE) {
             return $result;
@@ -205,7 +204,7 @@ class Helper
                 ->where('id', $meta->id)
                 ->insert([
                     'value' => $value,
-                    'updated_at' => date('Y-m-d H:i:s')
+                    'updated_at' => current_time('mysql')
                 ]);
             return $meta->id;
         }
@@ -224,8 +223,8 @@ class Helper
                 'form_id' => $formId,
                 'meta_key' => $metaKey,
                 'value' => $value,
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'created_at' => current_time('mysql'),
+                'updated_at' => current_time('mysql')
             ]);
 
     }
@@ -295,11 +294,11 @@ class Helper
         static::$tabIndex = 0;
     }
 
-
     public static function isFluentAdminPage()
     {
         $fluentPages = [
             'fluent_forms',
+            'fluent_forms_all_entries',
             'fluent_forms_transfer',
             'fluent_forms_settings',
             'fluent_form_add_ons',
@@ -315,7 +314,6 @@ class Helper
 
         return apply_filters('fluentform_is_admin_page', $status);
     }
-
 
     public static function getShortCodeIds($content, $tag = 'fluentform', $selector = 'id') {
 

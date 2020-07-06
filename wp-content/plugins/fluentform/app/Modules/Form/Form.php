@@ -35,6 +35,12 @@ class Form
      */
     protected $formFields;
 
+    protected $metas = [];
+
+    protected $formType = 'form';
+
+    protected $hasPayment = 0;
+
     /**
      * Form constructor.
      *
@@ -133,12 +139,10 @@ class Form
      */
     public function store()
     {
-        $type = $this->request->get('type', 'form');
+        $type = $this->request->get('type', $this->formType);
         $title = $this->request->get('title', 'My New Form');
         $status = $this->request->get('status', 'published');
         $createdBy = get_current_user_id();
-
-        //$this->validate();
 
         $now = current_time('mysql');
 
@@ -155,33 +159,49 @@ class Form
             $insertData['form_fields'] = $this->formFields;
         }
 
+        if($this->hasPayment) {
+            $insertData['has_payment'] = $this->hasPayment;
+        }
 
         $formId = $this->model->insert($insertData);
 
-        // Ranme the form name  here
+        // Rename the form name  here
         wpFluent()->table('fluentform_forms')->where('id', $formId)->update(array(
             'title' => $title . ' (#' . $formId . ')'
         ));
 
-        // add default form settings now
-        $defaultSettings = $this->defaultSettings ?: $this->getFormsDefaultSettings($formId);
+        if($this->metas && is_array($this->metas)) {
+            foreach ($this->metas as $meta) {
+                $meta['value'] = trim(preg_replace('/\s+/', ' ', $meta['value']));
 
-        $defaultSettings = apply_filters('fluentform_create_default_settings', $defaultSettings);
+                wpFluent()->table('fluentform_form_meta')
+                    ->insert(array(
+                        'form_id' => $formId,
+                        'meta_key' => $meta['meta_key'],
+                        'value' => $meta['value']
+                    ));
+            }
+        } else {
+            // add default form settings now
+            $defaultSettings = $this->defaultSettings ?: $this->getFormsDefaultSettings($formId);
 
-        wpFluent()->table('fluentform_form_meta')
-            ->insert(array(
-                'form_id' => $formId,
-                'meta_key' => 'formSettings',
-                'value' => json_encode($defaultSettings)
-            ));
+            $defaultSettings = apply_filters('fluentform_create_default_settings', $defaultSettings);
 
-        if ($this->defaultNotifications) {
             wpFluent()->table('fluentform_form_meta')
                 ->insert(array(
                     'form_id' => $formId,
-                    'meta_key' => 'notifications',
-                    'value' => json_encode($this->defaultNotifications)
+                    'meta_key' => 'formSettings',
+                    'value' => json_encode($defaultSettings)
                 ));
+
+            if ($this->defaultNotifications) {
+                wpFluent()->table('fluentform_form_meta')
+                    ->insert(array(
+                        'form_id' => $formId,
+                        'meta_key' => 'notifications',
+                        'value' => json_encode($this->defaultNotifications)
+                    ));
+            }
         }
 
         do_action('fluentform_inserted_new_form', $formId, $insertData);
@@ -193,7 +213,7 @@ class Form
         ), 200);
     }
 
-    private function getFormsDefaultSettings($formId = false)
+    public function getFormsDefaultSettings($formId = false)
     {
         $defaultSettings = array(
             'confirmation' => array(
@@ -231,18 +251,91 @@ class Form
                 'helpMessagePlacement' => 'with_label',
                 'errorMessagePlacement' => 'inline',
                 'cssClassName' => '',
-                'asteriskPlacement' => 'asterisk-left'
+                'asteriskPlacement' => 'asterisk-right'
             ),
             'delete_entry_on_submission' => 'no'
         );
 
-        $globalSettings = get_option('_fluentform_global_form_settings');
-
-        if (isset($globalSettings['layout'])) {
-            $defaultSettings['layout'] = $globalSettings['layout'];
+        if ($formId) {
+            $value = $this->getMeta($formId, 'formSettings', true);
+            if ($value) {
+                $defaultSettings = wp_parse_args($value, $defaultSettings);
+            }
+        } else {
+            $globalSettings = get_option('_fluentform_global_form_settings');
+            if (isset($globalSettings['layout'])) {
+                $defaultSettings['layout'] = $globalSettings['layout'];
+            }
         }
 
         return $defaultSettings;
+    }
+
+    public function getAdvancedValidationSettings($formId)
+    {
+        $settings = [
+            'status' => false,
+            'type' => 'all',
+            'conditions' => [
+                [
+                    'field' => '',
+                    'operator' => '=',
+                    'value' => ''
+                ]
+            ],
+            'error_message' => '',
+            'validation_type' => 'fail_on_condition_met'
+        ];
+
+        $metaSettings = $this->getMeta($formId, 'advancedValidationSettings', true);
+
+        if($metaSettings && is_array($metaSettings)) {
+            $settings = wp_parse_args($metaSettings, $settings);
+        }
+
+        return $settings;
+    }
+
+    public function getMeta($formId, $metaKey, $isJson = true)
+    {
+        $settingsMeta = wpFluent()->table('fluentform_form_meta')
+            ->where('form_id', $formId)
+            ->where('meta_key', $metaKey)
+            ->first();
+        if ($settingsMeta) {
+            if($isJson) {
+                return \json_decode($settingsMeta->value, true);
+            } else {
+                return $settingsMeta->value;
+            }
+        }
+        return false;
+    }
+
+    public function updateMeta($formId, $metaKey, $metaValue)
+    {
+        $exist = wpFluent()->table('fluentform_form_meta')
+            ->where('form_id', $formId)
+            ->where('meta_key', $metaKey)
+            ->first();
+
+        if(is_array($metaValue) || is_object($metaValue)) {
+            $metaValue = \json_encode($metaValue);
+        }
+
+        if($exist) {
+            return wpFluent()->table('fluentform_form_meta')
+                ->where('id', $exist->id)
+                ->update([
+                    'value' => $metaValue
+                ]);
+        }
+
+        return wpFluent()->table('fluentform_form_meta')->insert([
+            'form_id' => $formId,
+            'meta_key' => $metaKey,
+            'value' => $metaValue
+        ]);
     }
 
     /**
@@ -284,6 +377,7 @@ class Form
             'updated_at' => current_time('mysql')
         ];
 
+
         if ($formFields = $this->request->get('formFields')) {
             $formFields = apply_filters('fluentform_form_fields_update', $formFields, $formId);
             $data['form_fields'] = $formFields;
@@ -297,7 +391,7 @@ class Form
             $this->model->where('id', $formId)->update([
                 'has_payment' => 1
             ]);
-        } else if($form->has_payment) {
+        } else if ($form->has_payment) {
             $this->model->where('id', $formId)->update([
                 'has_payment' => 0
             ]);
@@ -334,18 +428,16 @@ class Form
             ->delete();
 
         wpFluent()->table('fluentform_form_analytics')
+            ->where('form_id', $formId)
+            ->delete();
+
+        wpFluent()->table('fluentform_logs')
             ->where('parent_source_id', $formId)
             ->whereIn('source_type', ['submission_item', 'form_item'])
             ->delete();
 
-        wpFluent()->table('fluentform_logs')
-            ->where('form_id', $formId)
-            ->delete();
-
-
-
         ob_start();
-        if(defined('FLUENTFORMPRO')) {
+        if (defined('FLUENTFORMPRO')) {
             try {
                 wpFluent()->table('fluentform_order_items')
                     ->where('form_id', $formId)
@@ -383,6 +475,7 @@ class Form
             'status' => $form->status,
             'appearance_settings' => $form->appearance_settings,
             'form_fields' => $form->form_fields,
+            'type' => $form->type,
             'has_payment' => $form->has_payment,
             'conditions' => $form->conditions,
             'created_by' => get_current_user_id(),
@@ -401,6 +494,7 @@ class Form
 
         $formMetas = wpFluent()->table('fluentform_form_meta')
             ->where('form_id', $formId)
+            ->whereNot('meta_key', ['_total_views'])
             ->get();
 
         foreach ($formMetas as $meta) {

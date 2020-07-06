@@ -52,6 +52,11 @@ $app->addAction('fluentform_global_menu', function () use ($app) {
         if (!wp_next_scheduled($hookName)) {
             wp_schedule_event(time(), 'ff_every_five_minutes', $hookName);
         }
+
+        $emailReportHookName = 'fluentform_do_email_report_scheduled_tasks';
+        if (!wp_next_scheduled($emailReportHookName)) {
+            wp_schedule_event(time(), 'daily', $emailReportHookName);
+        }
     }
 
 });
@@ -72,9 +77,11 @@ add_action('admin_init', function () {
         'fluent_forms_transfer',
         'fluent_forms_settings',
         'fluent_form_add_ons',
-        'fluent_forms_docs'
+        'fluent_forms_docs',
+        'fluent_forms_all_entries',
+        'msformentries'
     ];
-
+    
     if (isset($_GET['page']) && in_array($_GET['page'], $disablePages)) {
         remove_all_actions('admin_notices');
     }
@@ -188,6 +195,10 @@ add_action('fluentform_loading_editor_assets', function ($form) {
 
             if (!isset($element['settings']['layout_class']) && in_array($upgradeElement, ['input_radio', 'input_checkbox'])) {
                 $element['settings']['layout_class'] = '';
+            }
+
+            if (!isset($element['settings']['dynamic_default_value'])) {
+                $element['settings']['dynamic_default_value'] = '';
             }
 
             return $element;

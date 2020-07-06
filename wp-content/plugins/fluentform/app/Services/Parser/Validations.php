@@ -118,7 +118,7 @@ class Validations
     }
 
     /**
-     * Determines if the filed is applicable for extracting validations.
+     * Determines if the field is applicable for extracting validations.
      *
      * @param  array   $field
      * @return boolean

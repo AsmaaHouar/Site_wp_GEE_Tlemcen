@@ -3,6 +3,7 @@
 namespace FluentForm\App\Services\FormBuilder\Components;
 
 use FluentForm\App\Helpers\Helper;
+use FluentForm\App\Modules\Component\Component;
 use FluentForm\Framework\Helpers\ArrayHelper;
 
 class Checkable extends BaseComponent
@@ -30,6 +31,13 @@ class Checkable extends BaseComponent
         }
 
         $defaultValues = (array)$this->extractValueFromAttributes($data);
+
+        if($dynamicDefaultValue = ArrayHelper::get($data, 'settings.dynamic_default_value')) {
+            $parseValue = $this->parseEditorSmartCode($dynamicDefaultValue, $form);
+            if($parseValue) {
+                $defaultValues = (array) $parseValue;
+            }
+        }
 
         $elMarkup = '';
 
@@ -78,6 +86,8 @@ class Checkable extends BaseComponent
             $data['attributes']['data-calc_value'] = ArrayHelper::get($option,'calc_value');
 
             $atts = $this->buildAttributes($data['attributes']);
+
+
             $id = $this->getUniqueid(str_replace(['[', ']'], ['', ''], $data['attributes']['name']));
 
 

@@ -108,6 +108,9 @@ class DateTime extends BaseComponent
             <script type="text/javascript">
                 jQuery(document).ready(function ($) {
                    function initPicker() {
+                       if(typeof flatpickr == 'undefined') {
+                           return;
+                       }
                        flatpickr.localize(window.fluentFormVars.date_i18n);
                        var config = <?php echo $config; ?>;
                        try {

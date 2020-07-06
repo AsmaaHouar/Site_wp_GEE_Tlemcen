@@ -13,6 +13,7 @@ class ConditionAssesor
 
         $conditionals =  $status ? Arr::get($field, 'conditionals.conditions') : false;
 
+
         $hasConditionMet = true;
 
         if ($conditionals) {
@@ -21,7 +22,7 @@ class ConditionAssesor
             foreach ($conditionals as $conditional) {
 
                 $hasConditionMet = static::assess($conditional, $inputs);
-                
+
                 if($hasConditionMet && $toMatch == 'any') {
                     return true;
                 }
@@ -57,13 +58,13 @@ class ConditionAssesor
                     return $inputValue > $conditional['value'];
                     break;
                 case '<':
-                    return $inputValue > $conditional['value'];
+                    return $inputValue < $conditional['value'];
                     break;
                 case '>=':
-                    return $inputValue > $conditional['value'];
+                    return $inputValue >= $conditional['value'];
                     break;
                 case '<=':
-                    return $inputValue > $conditional['value'];
+                    return $inputValue <= $conditional['value'];
                     break;
                 case 'startsWith':
                     return Str::startsWith($inputValue, $conditional['value']);

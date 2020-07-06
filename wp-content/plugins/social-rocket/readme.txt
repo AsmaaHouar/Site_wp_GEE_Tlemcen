@@ -5,7 +5,7 @@ Tags: social share, social buttons, social share buttons, social media, share co
 Requires at least: 4.4
 Tested up to: 5.4
 Requires PHP: 5.5
-Stable tag: 1.2.9
+Stable tag: 1.2.10
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,6 +82,11 @@ Support is just a click away on [our website](https://wpsocialrocket.com/support
 
 
 == Changelog ==
+= 1.2.10 =
+* FIX: possible CSRF issue.
+* FIX: will not attempt to get Facebook counts if access token is empty.
+* UPDATE: updated .pot file for translations.
+
 = 1.2.9 =
 * UPDATE: update facebook API to v7.0 for getting share counts.
 * UPDATE: show admin notice if facebook token is invalid.

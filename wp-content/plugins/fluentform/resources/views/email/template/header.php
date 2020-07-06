@@ -14,6 +14,7 @@ $headerImage = apply_filters('fluentform_email_template_header_image', false, $f
 <html dir="<?php echo is_rtl() ? 'rtl' : 'ltr'?>">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="x-apple-disable-message-reformatting" />
         <title><?php echo get_bloginfo( 'name', 'display' ); ?></title>
     </head>
     <body <?php echo is_rtl() ? 'rightmargin' : 'leftmargin'; ?>="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">

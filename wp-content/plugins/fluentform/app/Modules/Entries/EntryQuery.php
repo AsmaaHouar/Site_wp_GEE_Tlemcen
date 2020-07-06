@@ -87,7 +87,11 @@ class EntryQuery
                         $operator = '=';
                         $value = $where[1];
                     }
-                    $query->where($column, $operator, $value);
+                    if(is_array($value)) {
+                        $query->whereIn($column, $value);
+                    } else {
+                        $query->where($column, $operator, $value);
+                    }
                 }
             }
         }

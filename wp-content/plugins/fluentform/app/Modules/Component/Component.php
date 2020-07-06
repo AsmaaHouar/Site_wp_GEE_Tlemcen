@@ -266,7 +266,7 @@ class Component
      */
     public function addFluentFormShortCode()
     {
-        add_action('wp_enqueue_scripts', array($this, 'registerScripts'));
+        add_action('wp_enqueue_scripts', array($this, 'registerScripts'), 999);
 
         $this->app->addShortCode('fluentform', function ($atts, $content) {
             $shortcodeDefaults = apply_filters('fluentform_shortcode_defaults', array(
@@ -440,6 +440,13 @@ class Component
             }
         }
 
+        if(is_feed()) {
+            global $post;
+            $feedText = sprintf( __( 'The form can be filled in the actual <a href="%s">website url</a>.', 'fluentform' ), get_permalink($post));
+            $feedText = apply_filters('fluentform_shortcode_feed_text', $feedText, $form);
+            return $feedText;
+        }
+
         $formSettings = wpFluent()
             ->table('fluentform_form_meta')
             ->where('form_id', $form_id)
@@ -476,7 +483,7 @@ class Component
 
         $formBuilder = $this->app->make('formBuilder');
         $output = $formBuilder->build($form, $instanceCssClass . ' ff-form-loading', $instanceCssClass);
-        $output = $this->processOutput($output, $form);
+        $output = $this->replaceEditorSmartCodes($output, $form);
 
 
         if (!wp_script_is('fluent-form-submission', 'registered')) {
@@ -505,7 +512,10 @@ class Component
             'pro_version' => (defined('FLUENTFORMPRO_VERSION')) ? FLUENTFORMPRO_VERSION : false,
             'fluentform_version' => FLUENTFORM_VERSION,
             'force_init' => false,
-            'stepAnimationDuration' => 350
+            'stepAnimationDuration' => 350,
+            'upload_completed_txt' => __('100% Completed', 'fluentform'),
+            'upload_start_txt' => __('0% Completed', 'fluentform'),
+            'uploading_txt' => __('Uploading', 'fluentform')
         ));
 
         wp_localize_script('fluent-form-submission', 'fluentFormVars', $vars);
@@ -517,6 +527,7 @@ class Component
         $formSettings['restrictions']['denyEmptySubmission'] = [
             'enabled' => false
         ];
+
 
         $form_vars = array(
             'id' => $form->id,
@@ -541,6 +552,10 @@ class Component
             window.fluent_form_<?php echo $instanceCssClass; ?> = <?php echo json_encode($form_vars);?>;
             <?php if(wp_doing_ajax()): ?>
             function initFFInstance_<?php echo $form_vars['id']; ?>() {
+                if(!window.fluentFormApp) {
+                    console.log('No fluentFormApp found');
+                    return;
+                }
                 var ajax_formInstance = window.fluentFormApp(jQuery('form.<?php echo $form_vars['form_instance']; ?>'));
                 if (ajax_formInstance) {
                     ajax_formInstance.initFormHandlers();
@@ -569,7 +584,7 @@ class Component
      * @param \stdClass $form
      * @return string
      */
-    private function processOutput($output, $form)
+    public function replaceEditorSmartCodes($output, $form)
     {
         // Get the patterns for default values from the output HTML string.
         // The example of a pattern would be for user ID: {user.ID}
@@ -582,6 +597,7 @@ class Component
             // The default value for each pattern will be resolved here.
             $attrDefaultValues[$pattern] = apply_filters('fluentform_parse_default_value', $pattern, $form);
         }
+
         // Raising an event so that others can hook into it and modify the default values later.
         $attrDefaultValues = (array)apply_filters('fluentform_parse_default_values', $attrDefaultValues);
 
@@ -830,7 +846,7 @@ class Component
             <script type="text/javascript">
                 <?php if(defined('ELEMENTOR_PRO_VERSION')): ?>
                 jQuery(document).on('elementor/popup/show', function (event, id, instance) {
-                    var ffForms = jQuery('#elementor-popup-modal-' + id).find('.frm-fluent-form');
+                    var ffForms = jQuery('#elementor-popup-modal-' + id).find('form.frm-fluent-form');
                     if (ffForms.length) {
                         jQuery.each(ffForms, function (index, ffForm) {
                             jQuery(ffForm).trigger('reInitExtras');

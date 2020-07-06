@@ -22,7 +22,7 @@
                         <h3>Join our facebook community</h3>
                         <p>We have a strong community where we discuss ideas and help each other.</p>
                         <p><a target="_blank" class="button button-primary"
-                              href="https://wpmanageninja.com/support-tickets/">
+                              href="https://www.facebook.com/groups/fluentforms/">
                                 Join Facebook Group</a></p>
                     </div>
                 </div>

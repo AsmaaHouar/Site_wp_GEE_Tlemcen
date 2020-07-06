@@ -92,8 +92,8 @@ class GlobalNotificationManager
                     'type' => 'submission_action',
                     'status' => 'pending',
                     'data' => maybe_serialize($feed),
-                    'created_at' => date('Y-m-d H:i:s'),
-                    'updated_at' => date('Y-m-d H:i:s')
+                    'created_at' => current_time('mysql'),
+                    'updated_at' => current_time('mysql')
                 ];
             } else {
                 do_action($action, $feed, $formData, $entry, $form);
@@ -144,5 +144,48 @@ class GlobalNotificationManager
         $submission = wpFluent()->table('fluentform_submissions')->find($id);
         $formInputs = FormFieldsParser::getEntryInputs($form, ['admin_label', 'raw']);
         return FormDataParser::parseFormEntry($submission, $form, $formInputs);
+    }
+
+    public function cleanUpPassword($entryId, $form)
+    {
+        // Let's get the password fields
+        $inputs = FormFieldsParser::getInputsByElementTypes($form, ['input_password']);
+        if(!$inputs) {
+            return;
+        }
+        $passwordKeys = array_keys($inputs);
+        // Let's delete from entry details
+        wpFluent()->table('fluentform_entry_details')
+            ->where('form_id', $form->id)
+            ->whereIn('field_name', $passwordKeys)
+            ->where('submission_id', $entryId)
+            ->delete();
+
+        // Let's alter from main submission data
+        $submission = wpFluent()->table('fluentform_submissions')
+                        ->where('id', $entryId)
+                        ->first();
+        if(!$submission) {
+            return;
+        }
+
+        $responseInputs = \json_decode($submission->response, true);
+
+        $replaced = false;
+        foreach ($passwordKeys as $passwordKey) {
+            if(!empty($responseInputs[$passwordKey])) {
+                $originalPassword = $responseInputs[$passwordKey];
+                $responseInputs[$passwordKey] = str_repeat("*", strlen($originalPassword)).' '. __('(truncated)', 'fluentform');
+                $replaced = true;
+            }
+        }
+
+        if($replaced) {
+            wpFluent()->table('fluentform_submissions')
+                ->where('id', $entryId)
+                ->update([
+                    'response' => \json_encode($responseInputs)
+                ]);
+        }
     }
 }

@@ -66,7 +66,7 @@ class Transfer
         $file = $this->request->get('file');
 
         if ($file instanceof File) {
-            $forms = json_decode($file->getContents(), true);
+            $forms = \json_decode($file->getContents(), true);
             $insertedForms = [];
             if ($forms && is_array($forms)) {
                 foreach ($forms as $formItem) {
@@ -86,7 +86,6 @@ class Transfer
                         'title'       => ArrayHelper::get($formItem, 'title'),
                         'form_fields' => $formFields,
                         'status' => ArrayHelper::get($formItem, 'status', 'published'),
-                        'has_payment' => ArrayHelper::get($formItem, 'has_payment', 0),
                         'has_payment' => ArrayHelper::get($formItem, 'has_payment', 0),
                         'type' => ArrayHelper::get($formItem, 'type', 'form'),
                         'created_by'  => get_current_user_id()
@@ -109,6 +108,7 @@ class Transfer
                     ];
 
                     if(isset($formItem['metas'])) {
+
                         foreach ($formItem['metas'] as $metaData) {
                             $settings = [
                                 'form_id'  => $formId,

@@ -114,7 +114,7 @@ class Activator
 			update_option('__fluentform_global_form_settings', array(
 				'layout' => array(
 					'labelPlacement' => 'top',
-					'asteriskPlacement' => 'asterisk-left',
+					'asteriskPlacement' => 'asterisk-right',
 					'helpMessagePlacement' => 'with_label',
 					'errorMessagePlacement' => 'inline',
 					'cssClassName' => ''
@@ -143,5 +143,11 @@ class Activator
         if (!wp_next_scheduled($hookName)) {
             wp_schedule_event(time(), 'ff_every_five_minutes', $hookName);
         }
+
+        $emailReportHookName = 'fluentform_do_email_report_scheduled_tasks';
+        if (!wp_next_scheduled($emailReportHookName)) {
+            wp_schedule_event(time(), 'daily', $emailReportHookName);
+        }
+
     }
 }

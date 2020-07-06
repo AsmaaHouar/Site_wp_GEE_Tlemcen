@@ -39,7 +39,7 @@ class Str
             $haystack = implode(' ', $haystack);
         }
         foreach ((array) $needles as $needle) {
-            if (substr($haystack, -strlen($needle)) === (string) $needle) {
+            if (substr($haystack, - strlen($needle)) === (string) $needle) {
                 return true;
             }
         }

@@ -19,30 +19,39 @@ class TabularGrid extends BaseComponent
 
         $checked = $data['settings']['selected_grids'];
 		$columnLabels = $data['settings']['grid_columns'];
+
+
 		$fieldType = $data['settings']['tabular_field_type'];
 		$columnHeaders = implode('</th><th>', array_values($columnLabels));
 		$elementHelpMessage = $this->getElementHelpMessage($data, $form);
 		$elementLabel = $this->setClasses($data)->buildElementLabel($data, $form);
 		
 
-		$elMarkup = "<table class='ff-table ff-checkable-grids'><thead><tr><th></th><th>{$columnHeaders}</th></tr></thead><tbody>";
+		$elMarkup = "<table class='ff-table ff-checkable-grids ff_flexible_table'><thead><tr><th></th><th>{$columnHeaders}</th></tr></thead><tbody>";
 
-		foreach ($this->makeTabularData($data) as $row) {
+        $tabIndex = \FluentForm\App\Helpers\Helper::getNextTabIndex();
+		foreach ($this->makeTabularData($data) as $index => $row) {
 			$elMarkup .= "<tr>";
-			$elMarkup .= "<td>{$row['label']}</td>";
+			$elMarkup .= "<td class='ff_grid_header'>{$row['label']}</td>";
 			$isRowChecked = in_array($row['name'], $checked) ? 'checked' : '';
 			foreach ($row['columns'] as $column) {
 				$name = $data['attributes']['name'] . '['.$row['name'].']';
-
-                if($tabIndex = \FluentForm\App\Helpers\Helper::getNextTabIndex()) {
-                    $data['attributes']['tabindex'] = $tabIndex;
-                }
-
                 $name = $fieldType == 'checkbox' ? ($name.'[]') : $name;
 				$isColChecked = in_array($column['name'], $checked) ? 'checked' : '';
 				$isChecked = $isRowChecked ? $isRowChecked : $isColChecked;
-				$input = "<input name='{$name}' type='{$fieldType}' value='{$column['name']}' {$isChecked}>";
-				$elMarkup .=  "<td>{$input}</td>";
+
+				$atts = [
+				    'name' => $name,
+                    'type' => $fieldType,
+                    'value' => $column['name']
+                ];
+				if($tabIndex) {
+                    $atts['tabindex'] = $tabIndex;
+                }
+				$attributes = $this->buildAttributes($atts, $form);
+
+				$input = "<input ".$attributes." {$isChecked}>";
+				$elMarkup .=  "<td data-label='".$column['label']."'>{$input}</td>";
 			}
 			$elMarkup .=  "</tr>";
 		}

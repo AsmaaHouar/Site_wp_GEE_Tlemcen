@@ -119,7 +119,6 @@ class FormHandler
 
         $returnData = $this->getReturnData($insertId, $form, $formData);
 
-
         $error = '';
         try {
             $this->app->doAction(
@@ -140,8 +139,6 @@ class FormHandler
                 $error = $e->getMessage();
             }
         }
-
-
 
         do_action('fluenform_before_submission_confirmation', $insertId, $formData, $form);
 
@@ -207,7 +204,8 @@ class FormHandler
                 $redirectUrl,
                 $insertId,
                 $formData,
-                $form
+                $form,
+                true
             );
 
             $redirectUrl = esc_url_raw($redirectUrl);
@@ -215,7 +213,7 @@ class FormHandler
             /*
              * For Empty Redirect Value
              */
-            if(strpos($redirectUrl, '=&')) {
+            if(strpos($redirectUrl, '=&') || substr($redirectUrl, -1) == '=') {
                 $urlArray = explode('?', $redirectUrl);
                 $baseUrl = array_shift($urlArray);
 
@@ -309,6 +307,11 @@ class FormHandler
                 if (empty($errors[$inputName])) {
                     $errors[$inputName] = [];
                 }
+
+                if(is_string($error)) {
+                    $error = [$error];
+                }
+
                 $errors[$inputName] = array_merge($error, $errors[$inputName]);
             }
         }

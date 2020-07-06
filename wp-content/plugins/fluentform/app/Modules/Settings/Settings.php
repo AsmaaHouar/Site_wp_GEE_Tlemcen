@@ -57,21 +57,14 @@ class Settings
             'storeReCaptcha',
             'storeSaveGlobalLayoutSettings',
             'storeMailChimpSettings',
-            "storeFluentformsPdf"
+            'storeEmailSummarySettings'
         ];
 
         if (in_array($method, $allowedMethods)) {
             $this->{$method}();
         }
     }
-    public function storeFluentformsPdf() {
-        $settings = $this->request->get('pdf_global');
-        $sanitizedSettings = fluentFormSanitizer($settings);
-        update_option('_fluentform_global_pdf_settings', $sanitizedSettings);
-        wp_send_json_success([
-            'message' => __('Global PDF Settings has been saved')
-        ], 200);
-    }
+
     public function storeReCaptcha()
     {
         $data = $this->request->get('reCaptcha');
@@ -199,5 +192,31 @@ class Settings
             'message' => __('Your mailchimp api key has been verfied and successfully set', 'fluentform'),
             'status'  => true
         ], 200);
+    }
+
+    public function storeEmailSummarySettings()
+    {
+        $defaults = [
+            'status' => 'yes',
+            'send_to_type' => 'admin_email',
+            'custom_recipients' => '',
+            'sending_day' => 'Mon'
+        ];
+        $settings = $this->request->get('value');
+        $settings = json_decode($settings, true);
+
+        $settings = wp_parse_args($settings, $defaults);
+
+        update_option('_fluentform_email_report_summary', $settings);
+
+        $emailReportHookName = 'fluentform_do_email_report_scheduled_tasks';
+        if (!wp_next_scheduled($emailReportHookName)) {
+            wp_schedule_event(time(), 'daily', $emailReportHookName);
+        }
+
+        wp_send_json_success([
+            'message' => __('Email Summary Settings has been updated')
+        ], 200);
+
     }
 }

@@ -127,7 +127,7 @@ class FluentFormAsyncRequest
                 ->update([
                     'status' => 'processing',
                     'retry_count' => $actionFeed->retry_count + 1,
-                    'updated_at' => date('Y-m-d H:i:s')
+                    'updated_at' => current_time('mysql')
                 ]);
 
             do_action($action, $feed, $formData, $entry, $form);

@@ -52,6 +52,8 @@ function social_rocket_deactivate_tasks() {
 		delete_option( '_social_rocket_pinterest_last_call' );
 		delete_option( '_social_rocket_reddit_last_call' );
 		delete_option( '_social_rocket_twitter_last_call' );
+		delete_option( '_social_rocket_facebook_invalid_token' );
+		delete_option( 'sr_admin_notice_sr_invalid_facebook_token' );
 		
 	}
 	

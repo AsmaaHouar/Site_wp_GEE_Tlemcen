@@ -59,12 +59,16 @@ $element_customization_settings = array(
                 'label' => __('Top', 'fluentform'),
             ),
             array(
-                'value' => 'left',
-                'label' => __('Left', 'fluentform'),
-            ),
-            array(
                 'value' => 'right',
                 'label' => __('Right', 'fluentform'),
+            ),
+            array(
+                'value' => 'bottom',
+                'label' => __('Bottom', 'fluentform'),
+            ),
+            array(
+                'value' => 'left',
+                'label' => __('Left', 'fluentform'),
             ),
             array(
                 'value' => 'hide_label',
@@ -245,6 +249,21 @@ $element_customization_settings = array(
         'label' => __('Enable auto page change for single radio field', 'fluentform'),
         'help_text' => __('If you enable this then for last radio item field will trigger next page change', 'fluentform'),
     ),
+    'enable_step_data_persistency' => array(
+        'template' => 'inputYesNoCheckBox',
+        'label' => __('Enable Per step data save (Save and Continue)', 'fluentform'),
+        'help_text' => __('If you enable this then on each step change the data current step data will be persisted in a step form<br />Your users can resume the form where they left', 'fluentform'),
+    ),
+    'enable_step_page_resume' => array(
+        'template' => 'inputYesNoCheckBox',
+        'label' => __('Resume Step from last form session', 'fluentform'),
+        'help_text' => __('If you enable this then users will see the form as step page where it has been left', 'fluentform'),
+        'dependency' => array(
+            'depends_on' => 'settings/enable_step_data_persistency',
+            'value' => 'yes',
+            'operator' => '=='
+        )
+    ),
     'progress_indicator' => array(
         'template' => 'radio',
         'label' => __('Progress Indicator', 'fluentform'),
@@ -312,6 +331,11 @@ $element_customization_settings = array(
         'help_text' => __('The maximum number of characters the input should accept', 'fluentform'),
     ),
     'value' => array(
+        'template' => 'inputValue',
+        'label' => __('Default Value', 'fluentform'),
+        'help_text' => __('If you would like to pre-populate the value of a field, enter it here.', 'fluentform'),
+    ),
+    'dynamic_default_value' => array(
         'template' => 'inputValue',
         'label' => __('Default Value', 'fluentform'),
         'help_text' => __('If you would like to pre-populate the value of a field, enter it here.', 'fluentform'),
@@ -478,6 +502,21 @@ $element_customization_settings = array(
             )
         )
     ),
+    'show_text' => array(
+        'template' => 'select',
+        'label' => __('Show Text', 'fluentform'),
+        'help_text' => __('Show Text value on selection', 'fluentform'),
+        'options' => array(
+            array(
+                'value' => 'yes',
+                'label' => __('Yes', 'fluentform'),
+            ),
+            array(
+                'value' => 'no',
+                'label' => __('No', 'fluentform'),
+            )
+        )
+    ),
     'unique_validation_message' => array(
         'template' => 'inputText',
         'label' => __('Validation Message for Duplicate', 'fluentform'),
@@ -500,6 +539,10 @@ $element_customization_settings = array(
             array(
                 'value' => 'ff_list_inline',
                 'label' => 'Inline Layout',
+            ),
+            array(
+                'value' => 'ff_list_buttons',
+                'label' => 'Button Type Styles',
             ),
             array(
                 'value' => 'ff_list_2col',

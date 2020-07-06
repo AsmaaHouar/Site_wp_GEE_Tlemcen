@@ -310,3 +310,30 @@ if ( class_exists( 'WooCommerce' ) ) {
  * Load plugin enhancement file to display admin notices.
  */
 require get_template_directory() . '/inc/plugin-enhancements.php';
+
+
+//////////Dépôtjust///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+if (isset($_POST['Btnsubmit'])) {
+	
+	global $wpdb;
+$data_array = array('Date_depot_Just' => $_POST['Date_depot_Just'],
+                    'Date_abs_du' => $_POST['Date_abs_du'],
+                    'Date_abs_au' => $_POST['Date_abs_au'],
+                    'Periode_d_absence_du' => $_POST['Periode_d_absence_du'],
+                    'Periode_d_absence_au' => $_POST['Periode_d_absence_au'],
+                    'Img_just' => $_FILES['Img_just']['name']
+                       );
+                       
+$table_name = 'gee_justification';
+
+$result = $wpdb->insert($table_name, $data_array);
+
+        if ($result == 1) {
+                     echo "<script>alert('Vos données sont été enregistrer');</script>";
+          
+        } else {
+                     echo "<script>alert('Erreur d\'enregistrement');</script>";
+          } 
+die;	
+}

@@ -29,6 +29,9 @@ class Name extends BaseComponent
 
         $data['attributes']['class'] .= $hasConditions;
         $data['attributes']['class'] .= ' ff-field_container ff-name-field-wrapper';
+        if($containerClass = ArrayHelper::get($data, 'settings.container_class')) {
+            $data['attributes']['class'] .= ' '.$containerClass;
+        }
         $atts = $this->buildAttributes(
             ArrayHelper::except($data['attributes'], 'name')
         );

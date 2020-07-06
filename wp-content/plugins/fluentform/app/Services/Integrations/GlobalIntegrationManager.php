@@ -201,8 +201,12 @@ class GlobalIntegrationManager
         $integrationName = $this->app->request->get('integration_name');
         $integrationId = intval($this->app->request->get('integration_id'));
         $formId = intval($this->app->request->get('form_id'));
-        $integration = wp_unslash($_REQUEST['integration']);
 
+        if($this->app->request->get('data_type') == 'stringify') {
+            $integration = \json_decode($this->app->request->get('integration'), true);
+        } else {
+            $integration = wp_unslash($_REQUEST['integration']);
+        }
 
         if($integration['enabled'] && $integration['enabled'] == 'true') {
             $integration['status'] = true;

@@ -907,10 +907,14 @@ class File extends \SplFileInfo implements Contract
     public function getMimeType()
     {
         $path = $this->getPathname();
+
+
         if(!function_exists('wp_check_filetype_and_ext')) {
             require_once ABSPATH .'wp-admin/includes/file.php';
         }
         $typeInfo = wp_check_filetype_and_ext($path, $this->originalName);
+
+
         if(empty($typeInfo['type'])) {
             $typeInfo = wp_check_filetype($this->originalName);
         }

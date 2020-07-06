@@ -58,6 +58,16 @@ $app->addAdminAjaxAction('fluentform-form-duplicate', function () use ($app) {
     (new \FluentForm\App\Modules\Form\Form($app))->duplicate();
 });
 
+$app->addAdminAjaxAction('fluentform_get_all_entries', function () use ($app) {
+    Acl::verify('fluentform_entries_viewer');
+    (new \FluentForm\App\Modules\Entries\Entries())->getAllFormEntries();
+});
+
+$app->addAdminAjaxAction('fluentform_get_all_entries_report', function () use ($app) {
+    Acl::verify('fluentform_entries_viewer');
+    (new \FluentForm\App\Modules\Entries\Entries())->getEntriesReport();
+});
+
 $app->addAdminAjaxAction('fluentform-form-inputs', function () use ($app) {
     Acl::verify('fluentform_forms_manager');
     (new \FluentForm\App\Modules\Form\Inputs($app))->index();
@@ -76,6 +86,16 @@ $app->addAdminAjaxAction('fluentform-load-all-editor-shortcodes', function () us
 $app->addAdminAjaxAction('fluentform-settings-formSettings', function () use ($app) {
     Acl::verify('fluentform_forms_manager');
     (new \FluentForm\App\Modules\Form\Settings\FormSettings($app))->index();
+});
+
+$app->addAdminAjaxAction('fluentform-settings-general-formSettings', function () use ($app) {
+    Acl::verify('fluentform_forms_manager');
+    (new \FluentForm\App\Modules\Form\Settings\FormSettings($app))->getGeneralSettingsAjax();
+});
+
+$app->addAdminAjaxAction('fluentform-save-settings-general-formSettings', function () use ($app) {
+    Acl::verify('fluentform_forms_manager');
+    (new \FluentForm\App\Modules\Form\Settings\FormSettings($app))->saveGeneralSettingsAjax();
 });
 
 $app->addAdminAjaxAction('fluentform-settings-formSettings-store', function () use ($app) {

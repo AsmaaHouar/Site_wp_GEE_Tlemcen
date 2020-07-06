@@ -127,7 +127,7 @@ class MailChimpIntegration extends IntegrationManager
             'title'                 => __('Mailchimp Feed', 'fluentform'),
             'logo'                  => $this->logo,
             'is_active'             => $this->isConfigured(),
-            'configure_title'       => __('Configration required!', 'fluentform'),
+            'configure_title'       => __('Configuration required!', 'fluentform'),
             'global_configure_url'  => admin_url('admin.php?page=fluent_forms_settings#mailchimp'),
             'configure_message'     => __('Mailchimp is not configured yet! Please configure your mailchimp api first', 'fluentform'),
             'configure_button_text' => __('Set Mailchimp API', 'fluentform')
@@ -228,7 +228,7 @@ class MailChimpIntegration extends IntegrationManager
                     'label'           => 'Double Opt-in',
                     'tips'            => 'When the double opt-in option is enabled,<br />Mailchimp will send a confirmation email<br />to the user and will only add them to your <br /Mailchimp list upon confirmation.',
                     'component'       => 'checkbox-single',
-                    'checkobox_label' => 'Enable Double Opt-in'
+                    'checkbox_label' => 'Enable Double Opt-in'
                 ],
                 [
                     'key'             => 'markAsVIP',
@@ -236,7 +236,7 @@ class MailChimpIntegration extends IntegrationManager
                     'label'           => 'VIP',
                     'tips'            => 'When enabled,<br /> This contact will be marked as VIP.',
                     'component'       => 'checkbox-single',
-                    'checkobox_label' => 'Mark as VIP Contact'
+                    'checkbox_label' => 'Mark as VIP Contact'
                 ],
                 [
                     'require_list' => true,
@@ -250,7 +250,7 @@ class MailChimpIntegration extends IntegrationManager
                     'key'             => 'enabled',
                     'label'           => 'Status',
                     'component'       => 'checkbox-single',
-                    'checkobox_label' => 'Enable This feed'
+                    'checkbox_label' => 'Enable This feed'
                 ]
             ],
             'button_require_list' => true,

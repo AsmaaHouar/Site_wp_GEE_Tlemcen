@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Social Rocket
  * Description: Social Sharing... to the Moon!
- * Version: 1.2.9
+ * Version: 1.2.10
  * Author: Social Rocket
  * Author URI: http://wpsocialrocket.com/
  *
@@ -20,7 +20,7 @@ if ( function_exists( 'social_rocket_init' ) ) {
 	return; // Exit if already loaded
 }
 
-define( 'SOCIAL_ROCKET_VERSION', '1.2.9' );
+define( 'SOCIAL_ROCKET_VERSION', '1.2.10' );
 define( 'SOCIAL_ROCKET_DBVERSION', '5' );
 define( 'SOCIAL_ROCKET_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SOCIAL_ROCKET_FILE', __FILE__ );

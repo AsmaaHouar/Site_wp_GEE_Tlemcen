@@ -8,7 +8,7 @@ $page = sanitize_text_field($_GET['page']);
     <a href="<?php echo admin_url('admin.php?page=fluent_forms'); ?>" class="ninja-tab <?php echo ($page == 'fluent_forms') ? 'ninja-tab-active' : '' ?>">
         <?php _e('All Forms', 'fluentform'); ?>
     </a>
-    <a href="<?php echo admin_url('admin.php?page=fluent_forms&type=entries#entries');?>" class="ninja-tab">
+    <a href="<?php echo admin_url('admin.php?page=fluent_forms_all_entries');?>" class="ninja-tab <?php echo ($page == 'fluent_forms_all_entries') ? 'ninja-tab-active' : '' ?>">
         <?php _e('All Entries', 'fluentform'); ?>
     </a>
 

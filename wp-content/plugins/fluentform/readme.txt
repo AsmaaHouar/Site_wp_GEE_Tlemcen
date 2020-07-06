@@ -1,10 +1,10 @@
 === Contact Form Plugin - WP Fluent Forms - Fastest Contact Form Builder Plugin for WordPress ===
-Contributors: techjewel,adreastrian,heera,a1war,wpmanageninja
+Contributors: techjewel,adreastrian,heera,wpmanageninja
 Tags: contact form, contact forms, wp forms, forms, form builder
 Requires at least: 4.5
 Tested up to: 5.4
 Requires PHP: 5.6
-Stable tag: 3.5.6
+Stable tag: 3.6.22
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -15,7 +15,7 @@ The fastest and easiest WordPress Contact form Plugin for WordPress.
 
 [youtube https://www.youtube.com/watch?v=FFR2ZZaVF3g]
 
-[Demo](https://wpfluentforms.com/contact-form-demo/) | [User Guide](https://wpmanageninja.com/docs/fluent-form/) | [Get Support](https://wpmanageninja.com/support-tickets/) | [Youtube Video Tutorials](https://www.youtube.com/watch?v=JJ0fBWMW174&list=PLXpD0vT4thWEu4gAkLE0Eq7PRCFp_8j2z)
+[Demo](https://wpfluentforms.com/contact-form-demo/) | [User Guide](https://wpmanageninja.com/docs/fluent-form/) | [Get Support](https://wpmanageninja.com/support-tickets/) | [Youtube Video Tutorials](https://www.youtube.com/watch?v=JJ0fBWMW174&list=PLXpD0vT4thWEu4gAkLE0Eq7PRCFp_8j2z) | [Official Facebook Community](https://www.facebook.com/groups/fluentforms/)
 
 Fluent Forms helps you create hassle-free contact forms, subscription forms, or any kind of forms you need for your website in minutes.
 
@@ -285,7 +285,7 @@ Yes, You can export your data in CSV, Excel, ODS, JSON format.
 
 = Do you have a public roadmap? =
 
-Yes, Please check our <a href="https://trello.com/b/FaDlAD9B/public-roadmap-wp-fluent-forms">public roadmap in trello</a>
+Yes, Please check our <a href="https://trello.com/b/FaDlAD9B/public-roadmap-wp-fluent-forms">public road map in Trello</a>
 
 
 == Screenshots ==
@@ -298,8 +298,32 @@ Yes, Please check our <a href="https://trello.com/b/FaDlAD9B/public-roadmap-wp-f
 7. Data Reporting
 8. Advanced Form Editor
 9. Form Integration Manager
+10. All Submission Chart by Date
 
 == Changelog ==
+
+= 3.6.22 (Date: June 19, 2020) =
+* Address Field Parser Fix
+* Fix Conditional Logic issue for multi-select
+* Added {inputs.fieldName.label} smartcode for accessing checkable field label
+
+= 3.6.0 (Date: June 18, 2020) =
+* Brand new UI for Form Builder
+* Introducing Weekly Email Summary for all of your forms
+* See All the Entries aggregated from all the forms
+* Better Oxygen Page Builder Support
+* Advanced Form Validation (Less Spam)
+* Introducing Elementor widget
+* Added German Language File
+* Mobile-friendly Admin Panel
+* Conditional logic issues for “less than” and “less than equal”
+* Added priority-based country selection
+* Added Kosovo to the country list
+* Elementor and Oxygen popup issues for step forms
+* Option to position input labels below the fields
+* Added layout option to make Radio/Checkbox as Button Selection style
+* Passwords will be now truncated after feeds and API calls completed
+* Added conditional source support for Hidden Fields
 
 = 3.5.6 (Date: April 29, 2020) =
 * PDF module has been added, Now you can send PDF via email or download

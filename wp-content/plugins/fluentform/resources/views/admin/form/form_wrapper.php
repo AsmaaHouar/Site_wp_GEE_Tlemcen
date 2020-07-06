@@ -1,4 +1,4 @@
-<div class="wrap ff_form_wrap">
+<div class="wrap ff_form_wrap ff_screen_<?php echo $route; ?>">
 	<?php do_action('fluentform_before_form_screen_wrapper'); ?>
 	
 	<div class="form_internal_menu">
@@ -19,12 +19,12 @@
 		
 		<div class="ff-navigation-right">
 			<?php do_action('fluentform_after_form_navigation', $form_id); ?>
-			<?php do_action('fluentform_after_form_navigation_'.$route, $form_id); ?>	
+			<?php do_action('fluentform_after_form_navigation_' . $route, $form_id); ?>	
 		</div>
 	</div>
 
 	<div class="ff_form_application_container">
-		<?php do_action( 'ff_fluentform_form_application_view_'.$route, $form_id ); ?>
+		<?php do_action('ff_fluentform_form_application_view_' . $route, $form_id); ?>
 	</div>
 	
 	<?php do_action('fluentform_after_form_screen_wrapper'); ?>

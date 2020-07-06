@@ -14,6 +14,7 @@ use FluentForm\App\Services\Parser\Form as FormParser;
  * @method array getPaymentInputFields(\stdClass $form, $with = [])
  * @method array getAttachmentInputFields(\stdClass $form, $with = [])
  * @method boolean hasRequiredFields(\stdClass $form, array $fields)
+ * @method array getInputsByElementTypes(\stdClass $form, array $elements)
  * @method array|null getField(\stdClass $form, string|array $element, string|array $attribute, array $with = [])
  */
 class FormFieldsParser

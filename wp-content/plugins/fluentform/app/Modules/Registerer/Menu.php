@@ -142,6 +142,14 @@ class Menu
             true
         );
 
+        wp_register_script(
+            'fluentform_all_entries',
+            $app->publicUrl('js/all_entries.js'),
+            array('jquery'),
+            FLUENTFORM_VERSION,
+            true
+        );
+
         wp_register_style(
             'fluentform-add-ons',
             $app->publicUrl('css/add-ons.css'),
@@ -199,7 +207,11 @@ class Menu
         } else if ($page == 'fluent_forms_transfer') {
             wp_enqueue_style('fluentform_settings_global');
             wp_enqueue_script('fluentform-transfer-js');
-        } else if ($page == 'fluent_forms_settings' || $page == 'fluent_form_payment_entries') {
+        } else if (
+            $page == 'fluent_forms_settings' ||
+            $page == 'fluent_form_payment_entries' ||
+            $page == 'fluent_forms_all_entries'
+        ) {
             wp_enqueue_style('fluentform_settings_global');
         } else if ($page == 'fluent_form_add_ons') {
             wp_enqueue_style('fluentform-add-ons');
@@ -213,9 +225,13 @@ class Menu
      */
     public function register()
     {
-        $dashBoardCapability = apply_filters('fluentform_dashboard_capability', 'fluentform_settings_manager');
+        $dashBoardCapability = apply_filters(
+            'fluentform_dashboard_capability', 'fluentform_settings_manager'
+        );
 
-        $settingsCapability = apply_filters('fluentform_settings_capability', 'fluentform_settings_manager');
+        $settingsCapability = apply_filters(
+            'fluentform_settings_capability', 'fluentform_settings_manager'
+        );
 
         if (!current_user_can($dashBoardCapability) && !current_user_can($settingsCapability)) {
             $customRoles = get_option('_fluentform_form_permission');
@@ -284,11 +300,11 @@ class Menu
                 __('Entries', 'fluentform'),
                 __('Entries', 'fluentform'),
                 $settingsCapability,
-                'fluent_forms#entries',
-                array($this, 'renderFormAdminRoute')
+                'fluent_forms_all_entries',
+                array($this, 'renderAllEntriesAdminRoute')
             );
 
-            if(apply_filters('fluentform_show_payment_entries', false)) {
+            if (apply_filters('fluentform_show_payment_entries', false)) {
                 add_submenu_page(
                     'fluent_forms',
                     __('Payments', 'fluentform'),
@@ -363,6 +379,12 @@ class Menu
         $this->renderForms();
     }
 
+    public function renderAllEntriesAdminRoute()
+    {
+        wp_enqueue_script('fluentform_all_entries');
+        View::render('admin.all_entries', array());
+    }
+
     private function renderFormInnerPages()
     {
         $form_id = intval($_GET['form_id']);
@@ -390,7 +412,7 @@ class Menu
             )
         );
 
-        $formAdminMenus = apply_filters('fluentform_form_admin_menu', $formAdminMenus, $form_id);
+        $formAdminMenus = apply_filters('fluentform_form_admin_menu', $formAdminMenus, $form_id, $form);
 
         $form = wpFluent()->table('fluentform_forms')->find($form_id);
 
@@ -569,7 +591,6 @@ class Menu
 
             if ($formFields) {
                 $formFields = json_decode($formFields, true);
-
                 foreach ($formFields['fields'] as $index => $formField) {
                     $formFields['fields'][$index] = apply_filters(
                         'fluentform_editor_init_element_' . $formField['element'], $formField, $form
@@ -695,7 +716,7 @@ class Menu
 
     public function addPreviewButton($formId)
     {
-        echo '<a target="_blank" class="el-button el-button--primary el-button--small" href="' . $this->getFormPreviewUrl($formId) . '">Preview & Design</a>';
+        echo '<a target="_blank" class="el-button el-button--small" href="' . $this->getFormPreviewUrl($formId) . '">Preview & Design</a>';
     }
 
     public function addCopyShortcodeButton($formId)

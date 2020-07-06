@@ -116,7 +116,7 @@ class FormBuilder
         ob_start();
         
         $stepCounter = 1;
-        
+
         foreach ($form->fields['fields'] as $item) {
             
             if ($hasStepWrapper && $item['element'] == 'form_step') {
@@ -143,6 +143,7 @@ class FormBuilder
         do_action('fluentform_render_item_submit_button', $form->fields['submitButton'], $form);
         
         $content = ob_get_clean();
+
 
         if ($hasStepWrapper) {
             $startElement = $form->fields['stepsWrapper']['stepStart'];
@@ -258,7 +259,13 @@ class FormBuilder
     {
         if (isset($item['settings']['validation_rules'])) {
             $rules = $item['settings']['validation_rules'];
-            $rules = apply_filters('fluentform_item_rules_' . $item['element'], $rules);
+            foreach ($rules as $ruleName => $rule) {
+                if(isset($rule['message'])) {
+                    $rules[$ruleName]['message'] = apply_filters('fluentform_validation_message_'.$ruleName, $rule['message'], $item);
+                    $rules[$ruleName]['message'] = apply_filters('fluentform_validation_message_'.$item['element'].'_'.$ruleName, $rule['message'], $item);
+                }
+            }
+            $rules = apply_filters('fluentform_item_rules_' . $item['element'], $rules, $item);
             $this->validationRules[ $item['attributes']['name'] ] = $rules;
         }
     }

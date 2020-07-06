@@ -3,6 +3,7 @@
 namespace FluentForm\App\Services\FormBuilder\Components;
 
 use FluentForm\App;
+use FluentForm\App\Modules\Component\Component;
 use FluentForm\Framework\Helpers\ArrayHelper;
 
 class BaseComponent
@@ -122,7 +123,7 @@ class BaseComponent
     protected function getAsteriskPlacement($form)
     {
         // for older version compatibility
-        $asteriskPlacement = 'asterisk-left';
+        $asteriskPlacement = 'asterisk-right';
 
         if (isset($form->settings['layout']['asteriskPlacement'])) {
             $asteriskPlacement = $form->settings['layout']['asteriskPlacement'];
@@ -250,5 +251,10 @@ class BaseComponent
             return "<div class='{$class}'>{$data['settings']['help_message']}</div>";
         }
         return false;
+    }
+
+    protected function parseEditorSmartCode($text, $form)
+    {
+        return (new Component($this->app))->replaceEditorSmartCodes($text, $form);
     }
 }

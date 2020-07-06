@@ -23,8 +23,10 @@ $text_lighter_20 = '#555555';
 
 // !important; is a gmail hack to prevent styles being stripped if it doesn't like something.
 ?>
+* {-webkit-text-size-adjust: none;}
 body {
 background-color: <?php echo esc_attr( $bg ); ?>;
+-webkit-text-size-adjust: none;
 font-family: sans-serif;
 -webkit-font-smoothing: antialiased;
 font-size: 14px;

@@ -558,6 +558,7 @@ $defaultElements = array(
                 'value' => '',
             ),
             'settings' => array(
+                'dynamic_default_value' => '',
                 'container_class' => '',
                 'label' => __('Radio Field', 'fluentform'),
                 'admin_field_label' => '',
@@ -605,6 +606,7 @@ $defaultElements = array(
                 'value' => array(),
             ),
             'settings' => array(
+                'dynamic_default_value' => '',
                 'container_class' => '',
                 'label' => __('Checkbox Field', 'fluentform'),
                 'admin_field_label' => '',
@@ -662,6 +664,7 @@ $defaultElements = array(
                 'multiple' => true,
             ),
             'settings' => array(
+                'dynamic_default_value' => '',
                 'help_message' => '',
                 'container_class' => '',
                 'label' => __('Multiselect', 'fluentform'),
@@ -922,7 +925,7 @@ $defaultElements = array(
             ),
             'settings' => array(
                 'label' => __('Ratings', 'fluentform'),
-                'show_text' => false,
+                'show_text' => 'no',
                 'help_message' => '',
                 'label_placement' => '',
                 'admin_field_label' => '',

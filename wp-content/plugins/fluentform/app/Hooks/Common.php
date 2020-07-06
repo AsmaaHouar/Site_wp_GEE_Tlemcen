@@ -47,9 +47,11 @@ $component = new \FluentForm\App\Modules\Component\Component($app);
 $component->addFluentformSubmissionInsertedFilter();
 $component->addIsRenderableFilter();
 
-$app->addAction('wp', function () use ($app) {
+add_action('wp', function () use ($app) {
     if (isset($_GET['fluentform_pages']) && $_GET['fluentform_pages'] == 1) {
+
         add_action('wp_enqueue_scripts', function () use ($app) {
+            wp_enqueue_script('jquery');
             wp_enqueue_style('fluent-form-styles');
             $form = wpFluent()->table('fluentform_forms')->find(intval($_REQUEST['preview_id']));
             if (apply_filters('fluentform_load_default_public', true, $form)) {
@@ -58,13 +60,15 @@ $app->addAction('wp', function () use ($app) {
             wp_enqueue_script('fluent-form-submission');
             wp_enqueue_style('fluent-form-preview', $app->publicUrl('css/preview.css'));
         });
-        (new \FluentForm\App\Modules\ProcessExteriorModule())->handleExteriorPages();
+
+        (new \FluentForm\App\Modules\ProcessExteriorModule())->handleExteriorPages($app);
     }
-});
+}, 1);
 
 $elements = [
     'select',
     'input_checkbox',
+    'input_radio',
     'address',
     'select_country',
     'gdpr_agreement',
@@ -73,15 +77,17 @@ $elements = [
 
 foreach ($elements as $element) {
     $event = 'fluentform_response_render_' . $element;
-    $app->addFilter($event, function ($response, $field, $form_id) {
-        if ($field['element'] == 'address' && isset($response->country)) {
+    $app->addFilter($event, function ($response, $field, $form_id, $isLabel = false) {
+        $element = $field['element'];
+
+        if ($element == 'address' && !empty($response->country)) {
             $countryList = getFluentFormCountryList();
             if (isset($countryList[$response->country])) {
                 $response->country = $countryList[$response->country];
             }
         }
 
-        if ($field['element'] == 'select_country') {
+        if ($element == 'select_country') {
             $countryList = getFluentFormCountryList();
             if (isset($countryList[$response])) {
                 $response = $countryList[$response];
@@ -92,8 +98,14 @@ foreach ($elements as $element) {
             $response = __('Accepted', 'fluentform');
         }
 
+        if($response && $isLabel && in_array($element, ['select', 'input_radio'])) {
+            if(isset($field['options'][$response])) {
+                return $field['options'][$response];
+            }
+        }
+
         return \FluentForm\App\Modules\Form\FormDataParser::formatValue($response);
-    }, 10, 3);
+    }, 10, 4);
 }
 
 $app->addFilter('fluentform_response_render_input_file', function ($response, $field, $form_id, $isHtml = false) {
@@ -292,12 +304,13 @@ add_filter('fluentform_validate_input_item_input_email', function ($validation, 
 add_filter('cron_schedules', function ($schedules) {
     $schedules['ff_every_five_minutes'] = array(
         'interval' => 300,
-        'display' => esc_html__('Every 5 minites (FluentForm)', 'fluentform'),
+        'display' => esc_html__('Every 5 minutes (FluentForm)', 'fluentform'),
     );
     return $schedules;
 }, 10, 1);
 
-add_action('fluentform_do_scheduled_tasks', 'fluentformHandleScheduledTasks');
+add_action('fluentform_do_scheduled_tasks', 'fluentFormHandleScheduledTasks');
+add_action('fluentform_do_email_report_scheduled_tasks', 'fluentFormHandleScheduledEmailReport');
 
 add_action('ff_integration_action_result', function ($feed, $status, $note = '') {
     if (!isset($feed['scheduled_action_id']) || !$status) {
@@ -314,3 +327,18 @@ add_action('ff_integration_action_result', function ($feed, $status, $note = '')
             'note' => $note
         ]);
 }, 10, 3);
+
+add_action('fluentform_global_notify_completed', function ($insertId, $form) use ($app) {
+    if(strpos($form->form_fields, '"element":"input_password"') && apply_filters('fluentform_truncate_password_values', true, $form)) {
+        // we have password
+        (new \FluentForm\App\Services\Integrations\GlobalNotificationManager($app))->cleanUpPassword($insertId, $form);
+    }
+}, 10, 2);
+
+/*
+ * Elementor Block Init
+ */
+
+if(defined('ELEMENTOR_VERSION')) {
+    new \FluentForm\App\Modules\Widgets\ElementorWidget($app);
+}

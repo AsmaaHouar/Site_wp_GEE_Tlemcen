@@ -8,11 +8,12 @@ class ProcessExteriorModule
 {
     public function handleExteriorPages()
     {
-        if (isset($_GET['fluentform_pages']) && $_GET['fluentform_pages'] == 1) {
-            if (isset($_GET['preview_id']) && $_GET['preview_id']) {
-                $this->renderFormPreview(intval($_GET['preview_id']));
-            }
+        if(defined('CT_VERSION')) {
+            // oxygen page compatibility
+            remove_action( 'wp_head', 'oxy_print_cached_css', 999999 );
         }
+
+        $this->renderFormPreview(intval($_GET['preview_id']));
     }
 
     public function renderFormPreview($form_id)
@@ -44,7 +45,7 @@ class ProcessExteriorModule
     /**
      * Set the posts to one
      *
-     * @param  WP_Query $query
+     * @param WP_Query $query
      *
      * @return void
      */
